@@ -20,6 +20,7 @@ getCountMap llc step = map (\x ->(,) x (getCount llc x)) step
   where
    getCount llc la = length.filter (\z ->z) $ map (\x -> all (\y -> elem y x) la) llc 
 
+-- commit test
 apriAll llc min allStep curStep 
   |(not.null) curStep = apriAll llc min (allStep++newCur) newCur
   |otherwise = allStep
