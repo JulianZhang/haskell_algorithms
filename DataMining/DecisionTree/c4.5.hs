@@ -1,4 +1,5 @@
 import Data.Tree
+import Data.List
 
 getDiv::Int->Int->Float
 getDiv p n= (fromInteger px)/(fromInteger nx)
@@ -6,11 +7,10 @@ getDiv p n= (fromInteger px)/(fromInteger nx)
     px = toInteger p
     nx = toInteger n
 
-getGain xt = (logTemp pt)+(logTemp pf)
+getEntropy xt = sum $ map (\x -> logTemp x) pList
   where
-    countt = length $ filter (\x -> x) xt
-    pt = getDiv countt countAll
-    pf = getDiv countf countAll
-    countAll =  length $ xt
-    countf = countAll - countt
+    groupList = group $ sort xt
+    countList = map (\x -> length x) groupList
+    countAll =  length xt
+    pList = map (\x -> getDiv x countAll) countList
     logTemp x = x*(logBase 2 x)
