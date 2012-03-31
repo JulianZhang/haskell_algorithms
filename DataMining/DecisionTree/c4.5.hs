@@ -6,10 +6,11 @@ getDiv p n= (fromInteger px)/(fromInteger nx)
     px = toInteger p
     nx = toInteger n
 
-getGain xt = pt*pf
+getGain xt = (logTemp pt)+(logTemp pf)
   where
     countt = length $ filter (\x -> x) xt
     pt = getDiv countt countAll
     pf = getDiv countf countAll
     countAll =  length $ xt
     countf = countAll - countt
+    logTemp x = x*(logBase 2 x)
