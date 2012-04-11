@@ -1,3 +1,6 @@
+module DecisionTree.C4_5
+  where
+
 import Data.Tree
 import Data.List
 

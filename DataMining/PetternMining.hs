@@ -29,8 +29,3 @@ apriAll llc min allStep curStep
     jointemp step =  aprjoin step step
     filterNew step = filter (not.null)  $ foldl union [] (jointemp step)
 
-
-
-
-
-
