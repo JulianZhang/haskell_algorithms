@@ -50,3 +50,9 @@ getProps::[[a]]->[[a]]
 getProps pl 
       | ((length.head) pl )== 0 = [[]]
       | otherwise = [map (\x -> head x) pl]  ++ (getProps (map (\x -> tail x) pl) )  
+
+maxGainIndex s = head $ findIndices (\x -> x ==(maximum s)) s
+
+filterBy v i = filter (\x -> ((fst x)!!i)==v )
+
+nub_by i ls = nub $ map (\x -> x!!i ) ls
