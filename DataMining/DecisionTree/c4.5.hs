@@ -1,4 +1,5 @@
 module DecisionTree.C4_5
+  (listStep)
   where
 
 import Data.Tree
@@ -56,3 +57,12 @@ maxGainIndex s = head $ findIndices (\x -> x ==(maximum s)) s
 filterBy v i = filter (\x -> ((fst x)!!i)==v )
 
 nub_by i ls = nub $ map (\x -> x!!i ) ls
+
+listStep::Ord a => [([a],a)]->Int->[Int]
+listStep cs i
+  | ((maximum.getAllGain) cs) == 0 = [i]
+  | otherwise = concat $ map (\x -> listStep x maxI) vList  
+  where 
+    maxI = maxGainIndex $ getAllGain cs
+    nList = nub_by maxI $ map (\x -> fst x ) cs
+    vList = map (\x -> filterBy x maxI  cs) nList
