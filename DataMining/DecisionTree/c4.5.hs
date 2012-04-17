@@ -63,15 +63,20 @@ nub_by i ls = nub $ map (\x -> x!!i ) ls
 
 -- listStep::Ord a => [([a],a)]->Int->[(Int,Int)]
 listStep cs i v 
-  | ((maximum.getAllGain) cs) == 0 = Node (i,v) []
+  | ((maximum.getAllGain) cs) == 0 = Node (i,v,(groupValueList cs)) []
   -- can't improve | isAlltheSame cs = [(i,countI)]
-  | 1 == countI = Node (i,v) [] 
-  | otherwise = Node (i,v) $ map (\x -> listStep (snd x) maxI (fst x)) vList  
+  | 1 == countI = Node (i,v,(groupValueList cs)) [] 
+  | otherwise = Node (i,v,"tt") $ map (\x -> listStep (snd x) maxI (fst x)) vList  
   where 
     maxI = maxGainIndex $ getAllGain cs
     nList = nub_by maxI $ map (\x -> fst x ) cs
     vList = map (\x -> (,) x (filterBy x maxI  cs)) nList
     countI = length cs
+
+groupValueList sList = head nubList
+  where
+    valueList = map (\x -> snd x) sList
+    nubList = nub valueList
 
 isAlltheSame cs
   | 1 == length distinList = True
