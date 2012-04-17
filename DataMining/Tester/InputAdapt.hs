@@ -18,9 +18,9 @@ tran2list s
 l2t s = (,) (init s) (last s)
 
 -- test = lines $ myReadFile dataPath adultData 
-test = do
+test i = do
   inf <- myReadFile dataPath adultData
-  let cs = take 5000 $ map (\x -> l2t (tran2list x) ) (lines inf)
+  let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
   -- let gs = maxGainIndex $ getAllGain cs
   -- let nl = nub_by 11 $ map (\x -> fst x ) cs
   let all = listStep cs (-1)

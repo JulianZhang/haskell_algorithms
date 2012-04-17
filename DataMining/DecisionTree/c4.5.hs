@@ -52,17 +52,30 @@ getProps pl
       | ((length.head) pl )== 0 = [[]]
       | otherwise = [map (\x -> head x) pl]  ++ (getProps (map (\x -> tail x) pl) )  
 
-maxGainIndex s = head $ findIndices (\x -> x ==(maximum s)) s
+maxGainIndex s = myHead $ findIndices (\x -> x ==(maximum s)) s
+  where
+    myHead [] = 0
+    myHead xs = head xs
 
 filterBy v i = filter (\x -> ((fst x)!!i)==v )
 
 nub_by i ls = nub $ map (\x -> x!!i ) ls
 
-listStep::Ord a => [([a],a)]->Int->[Int]
+listStep::Ord a => [([a],a)]->Int->[(Int,Int)]
 listStep cs i
-  | ((maximum.getAllGain) cs) == 0 = [i]
+  | ((maximum.getAllGain) cs) == 0 = [(i,countI)]
+  -- can't improve | isAlltheSame cs = [(i,countI)]
+  | 1 == countI = [(i,1)] 
   | otherwise = concat $ map (\x -> listStep x maxI) vList  
   where 
     maxI = maxGainIndex $ getAllGain cs
     nList = nub_by maxI $ map (\x -> fst x ) cs
     vList = map (\x -> filterBy x maxI  cs) nList
+    countI = length cs
+
+isAlltheSame cs
+  | 1 == length distinList = True
+  | otherwise = False
+  where
+    tagList = map (\x -> snd x) cs
+    distinList = nub tagList 
