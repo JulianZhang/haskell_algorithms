@@ -24,7 +24,7 @@ test i = do
   let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
   -- let gs = maxGainIndex $ getAllGain cs
   -- let nl = nub_by 11 $ map (\x -> fst x ) cs
-  let all = listStep cs (-1)
+  let all = listStep cs (-1) "tt"
   return all
 
 -- tTree::[a]->Tree a

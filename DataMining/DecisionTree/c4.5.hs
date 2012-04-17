@@ -61,16 +61,16 @@ filterBy v i = filter (\x -> ((fst x)!!i)==v )
 
 nub_by i ls = nub $ map (\x -> x!!i ) ls
 
-listStep::Ord a => [([a],a)]->Int->[(Int,Int)]
-listStep cs i
-  | ((maximum.getAllGain) cs) == 0 = [(i,countI)]
+-- listStep::Ord a => [([a],a)]->Int->[(Int,Int)]
+listStep cs i v 
+  | ((maximum.getAllGain) cs) == 0 = Node (i,v) []
   -- can't improve | isAlltheSame cs = [(i,countI)]
-  | 1 == countI = [(i,1)] 
-  | otherwise = concat $ map (\x -> listStep x maxI) vList  
+  | 1 == countI = Node (i,v) [] 
+  | otherwise = Node (i,v) $ map (\x -> listStep (snd x) maxI (fst x)) vList  
   where 
     maxI = maxGainIndex $ getAllGain cs
     nList = nub_by maxI $ map (\x -> fst x ) cs
-    vList = map (\x -> filterBy x maxI  cs) nList
+    vList = map (\x -> (,) x (filterBy x maxI  cs)) nList
     countI = length cs
 
 isAlltheSame cs
