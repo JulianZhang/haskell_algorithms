@@ -1,4 +1,5 @@
 import DecisionTree.C4_5
+import Data.Tree
 
 dataPath = "/Users/zhangjun/Desktop/code/haskell_algorithms/dataset/"
 
@@ -25,4 +26,13 @@ test i = do
   -- let nl = nub_by 11 $ map (\x -> fst x ) cs
   let all = listStep cs (-1)
   return all
+
+-- tTree::[a]->Tree a
+tTree i
+  | 1 == li = Node hi []
+  | otherwise = Node hi  [(tTree.tail) i ] 
+  where
+    li = length i
+    hi = head i
+    
 
