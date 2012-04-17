@@ -1,5 +1,5 @@
 module DecisionTree.C4_5
-  (listStep)
+  (getAllGain,listStep,filterList)
   where
 
 import Data.Tree
@@ -21,7 +21,7 @@ getEntropy xt = sum $ map (\x -> logTemp x) pList
 logTemp x = x*(logBase 2 x)
 
 -- getAllGain::Ord a =>[([a],b)]->[[a]]
-getAllGain sList = zipWith (/) gainList (getSplitInfox pList all)  
+getAllGain sList = zipWith (/) gainList  (getSplitInfox pList all)  
   where
     propsList = filter (\x ->(not.null) x) $ getProps $ map (\x -> fst x) sList
     valueList = map (\x -> snd x) sList
@@ -54,7 +54,7 @@ getProps pl
 
 maxGainIndex s = myHead $ findIndices (\x -> x ==(maximum s)) s
   where
-    myHead [] = 0
+    -- myHead [] = 0
     myHead xs = head xs
 
 filterBy v i = filter (\x -> ((fst x)!!i)==v )
@@ -62,17 +62,19 @@ filterBy v i = filter (\x -> ((fst x)!!i)==v )
 nub_by i ls = nub $ map (\x -> x!!i ) ls
 
 -- listStep::Ord a => [([a],a)]->Int->[(Int,Int)]
-listStep cs i v 
-  | ((maximum.getAllGain) cs) == 0 = Node (i,v,(groupValueList cs)) []
-  -- can't improve | isAlltheSame cs = [(i,countI)]
-  | 1 == countI = Node (i,v,(groupValueList cs)) [] 
-  | otherwise = Node (i,v,"tt") $ map (\x -> listStep (snd x) maxI (fst x)) vList  
+listStep cs i v level 
+  | isAlltheSame cs = Node (i,v,(groupValueList cs),level) []
+  | ((maximum.getAllGain) cs) == 0 = Node (i,v,(groupValueList cs),level) []
+  | 1 == countI = Node (i,v,(groupValueList cs),level) [] 
+  | otherwise = Node (i,v,"tt",level) $ map (\x -> listStep (snd x) maxI (fst x) (level+1)) vList  
   where 
     maxI = maxGainIndex $ getAllGain cs
     nList = nub_by maxI $ map (\x -> fst x ) cs
     vList = map (\x -> (,) x (filterBy x maxI  cs)) nList
     countI = length cs
 
+
+----------------- test code
 groupValueList sList = head nubList
   where
     valueList = map (\x -> snd x) sList
@@ -84,3 +86,10 @@ isAlltheSame cs
   where
     tagList = map (\x -> snd x) cs
     distinList = nub tagList 
+
+filterList cs [] = cs
+filterList cs ls = filterList fs tl
+  where
+    tl = tail ls
+    hl = head ls
+    fs = filterBy (snd hl) (fst hl) cs

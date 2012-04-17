@@ -1,5 +1,6 @@
 import DecisionTree.C4_5
 import Data.Tree
+import Data.List
 
 dataPath = "/Users/zhangjun/Desktop/code/haskell_algorithms/dataset/"
 
@@ -22,10 +23,19 @@ l2t s = (,) (init s) (last s)
 test i = do
   inf <- myReadFile dataPath adultData
   let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
+  let all = listStep cs (-1) "tt" 0  
+  return all
+
+test2 i = do
+  inf <- myReadFile dataPath adultData
+  let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
   -- let gs = maxGainIndex $ getAllGain cs
   -- let nl = nub_by 11 $ map (\x -> fst x ) cs
-  let all = listStep cs (-1) "tt"
-  return all
+  let all = listStep cs (-1) "tt" 0
+  let count = length $ map (\x -> l2t (tran2list x) ) (lines inf)
+  let errCs = getAllGain $ filterList cs  [(8," White"), (13," United-States"), (9," Male"),(10," 0"), (5," Married-civ-spouse"), (7," Husband"), (1," Private"),(3," HS-grad"), (12," 40"),(6," Craft-repair"), (0,"49")]
+  let maxErr = maximum errCs  
+  return errCs
 
 -- tTree::[a]->Tree a
 tTree i
@@ -35,4 +45,8 @@ tTree i
     li = length i
     hi = head i
     
+maxGainIndex1 s = myHead $ findIndices (\x -> x ==(maximum s)) s
+  where
+    myHead [] = 0
+    myHead xs = head xs
 
