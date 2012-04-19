@@ -22,7 +22,7 @@ getEntropy xt = sum $ map (\x -> logTemp x) pList
 logTemp x = x*(logBase 2 x)
 
 -- getAllGain::Ord a =>[([a],b)]->[[a]]
-getAllGain sList = zipWith (/) gainList  (getSplitInfox pList all)  
+getAllGain sList = gainList -- zipWith (/) gainList  (getSplitInfox pList all)  
   where
     propsList = filter (\x ->(not.null) x) $ getProps $ map (\x -> fst x) sList
     valueList = map (\x -> snd x) sList
@@ -48,10 +48,15 @@ propGain sl = ((toFloat.length) sl) * (getEntropy (map (\x -> snd x) sl ))
 
 toFloat x = (fromInteger.toInteger) x :: Float
 
-getProps::[[a]]->[[a]]
+getProps:: [[String]]->[[String]]
 getProps pl 
-      | ((length.head) pl )== 0 = [[]]
-      | otherwise = [map (\x -> head x) pl]  ++ (getProps (map (\x -> tail x) pl) )  
+  | ((length.head) pl )== 0 = [[]]
+  | otherwise = [map (\x -> tHead x) pl]  ++ (getProps (map (\x -> tail x) pl) )  -- (last.reverse)
+  where
+    tHead [] = head $ trace (show pl) ["tt"]
+    tHead s =  head s
+
+testHead s = trace "testHead input "
 
 maxGainIndex s 
   | null fs = myHead $ findIndices (\x -> x ==0) (trace "ept" s)
