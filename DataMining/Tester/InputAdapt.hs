@@ -24,9 +24,9 @@ l2t s = (,) (init s) (last s)
 test i = do
   inf <- myReadFile dataPath adultData
   let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
-  let all = listStep cs (-1) "tt" 0
-  -- putTraceMsg $ (show.head.flatten) all
-  return (sum ( map (\x -> length x) (levels all) ) )
+  let fcs = filter (\x -> (not.null) (snd x) ) cs
+  let all = listStep fcs (-1) "tt" 0  
+  return all
 
 test2 i = do
   inf <- myReadFile dataPath adultData
