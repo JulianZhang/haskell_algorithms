@@ -4,6 +4,7 @@ module DecisionTree.C4_5
 
 import Data.Tree
 import Data.List
+import Debug.Trace
 
 getDiv::Int->Int->Float
 getDiv p n= (fromInteger px)/(fromInteger nx)
@@ -52,10 +53,16 @@ getProps pl
       | ((length.head) pl )== 0 = [[]]
       | otherwise = [map (\x -> head x) pl]  ++ (getProps (map (\x -> tail x) pl) )  
 
-maxGainIndex s = myHead $ findIndices (\x -> x ==(maximum s)) s
+maxGainIndex s 
+  | null fs = myHead $ findIndices (\x -> x ==0) (trace "ept" s)
+  | otherwise = myHead $ findIndices (\x -> x ==(maxTag)) s
   where
-    -- myHead [] = 0
-    myHead xs = head xs
+    -- myHead [] = (trace "empty s" 0)
+    myHead xs 
+      | null xs = (trace "empty s" 0)
+      | otherwise = head xs
+    maxTag = maximum fs
+    fs =  filter (\x -> (getDiv 1 0)  /= x) s
 
 filterBy v i = filter (\x -> ((fst x)!!i)==v )
 
@@ -65,7 +72,8 @@ nub_by i ls = nub $ map (\x -> x!!i ) ls
 listStep cs i v level 
   | isAlltheSame cs = Node (i,v,(groupValueList cs),level) []
   | ((maximum.getAllGain) cs) == 0 = Node (i,v,(groupValueList cs),level) []
-  | 1 == countI = Node (i,v,(groupValueList cs),level) [] 
+  | 1 == countI = Node (i,v,(groupValueList cs),level) []
+  | 15 < level = Node (i,v,(groupValueList (trace "level up than 15 " cs)),level) []
   | otherwise = Node (i,v,"tt",level) $ map (\x -> listStep (snd x) maxI (fst x) (level+1)) vList  
   where 
     maxI = maxGainIndex $ getAllGain cs

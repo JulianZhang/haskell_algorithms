@@ -1,6 +1,7 @@
 import DecisionTree.C4_5
 import Data.Tree
 import Data.List
+import Debug.Trace
 
 dataPath = "/Users/zhangjun/Desktop/code/haskell_algorithms/dataset/"
 
@@ -23,8 +24,9 @@ l2t s = (,) (init s) (last s)
 test i = do
   inf <- myReadFile dataPath adultData
   let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
-  let all = listStep cs (-1) "tt" 0  
-  return all
+  let all = listStep cs (-1) "tt" 0
+  -- putTraceMsg $ (show.head.flatten) all
+  return (sum ( map (\x -> length x) (levels all) ) )
 
 test2 i = do
   inf <- myReadFile dataPath adultData
