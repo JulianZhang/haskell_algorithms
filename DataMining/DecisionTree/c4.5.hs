@@ -22,7 +22,7 @@ getEntropy xt = sum $ map (\x -> logTemp x) pList
 logTemp x = x*(logBase 2 x)
 
 -- getAllGain::Ord a =>[([a],b)]->[[a]]
-getAllGain sList = gainList -- zipWith (/) gainList  (getSplitInfox pList all)  
+getAllGain sList = zipWith (/) gainList  (getSplitInfox pList all)  
   where
     propsList = filter (\x ->(not.null) x) $ getProps $ map (\x -> fst x) sList
     valueList = map (\x -> snd x) sList
