@@ -1,5 +1,5 @@
 module DecisionTree.C4_5
-  (getAllGain,listStep,filterList)
+  (getAllGain,listStep,filterList,searchResult)
   where
 
 import Data.Tree
@@ -85,6 +85,23 @@ listStep cs i v level
     nList = nub_by maxI $ map (\x -> fst x ) cs
     vList = map (\x -> (,) x (filterBy x maxI  cs)) nList
     countI = length cs
+
+searchResult treeNode testData
+  | -1 == idx = concat $ map (\x -> searchResult x testData ) subTree
+  | tValue /= value = []
+  | flag /= "tt" = [flag]
+  | otherwise = concat $ map (\x -> searchResult x testData ) subTree
+  where
+    rv =  rootLabel treeNode
+    idx = fst $ getIndexValue rv
+    value = snd $ getIndexValue rv
+    tValue = testData !! idx
+    flag = getFlag $ trace ( "flag " ++  (show rv)) rv
+    subTree = subForest treeNode
+
+getFlag (_,_,a,_) = a
+
+getIndexValue (a,b,_,_) = (a,b)
 
 
 ----------------- test code

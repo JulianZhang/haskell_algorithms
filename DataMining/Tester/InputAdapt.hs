@@ -21,12 +21,22 @@ tran2list s
 l2t s = (,) (init s) (last s)
 
 -- test = lines $ myReadFile dataPath adultData 
-test i = do
+buildTree i = do
   inf <- myReadFile dataPath adultData
   let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
   let fcs = filter (\x -> (not.null) (snd x) ) cs
   let all = listStep fcs (-1) "tt" 0  
   return all
+
+allTree = buildTree 40
+
+testFlag i = do 
+  inf <- myReadFile dataPath adultData
+  let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
+  let tData = (fst.last) cs
+  myTree <- allTree
+  let tFlag = searchResult myTree (trace ("input list" ++ (show tData))  tData)
+  return $ length tFlag
 
 test2 i = do
   inf <- myReadFile dataPath adultData
