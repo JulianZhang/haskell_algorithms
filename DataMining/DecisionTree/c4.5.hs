@@ -87,17 +87,18 @@ listStep cs i v level
     countI = length cs
 
 searchResult treeNode testData
-  | -1 == idx = concat $ map (\x -> searchResult x testData ) subTree
+  | -1 == idx = nextLevel
   | tValue /= value = []
   | flag /= "tt" = [flag]
-  | otherwise = concat $ map (\x -> searchResult x testData ) subTree
+  | otherwise = nextLevel
   where
     rv =  rootLabel treeNode
     idx = fst $ getIndexValue rv
     value = snd $ getIndexValue rv
     tValue = testData !! idx
-    flag = getFlag $ trace ( "flag " ++  (show rv)) rv
+    flag = getFlag  rv
     subTree = subForest treeNode
+    nextLevel = concat $ map (\x -> searchResult x testData ) subTree
 
 getFlag (_,_,a,_) = a
 

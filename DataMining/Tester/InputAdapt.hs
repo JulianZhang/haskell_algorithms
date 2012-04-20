@@ -6,7 +6,7 @@ import Debug.Trace
 dataPath = "/Users/zhangjun/Desktop/code/haskell_algorithms/dataset/"
 
 adultData = "adult/adult.data.txt"
-adultTest = "adult/adult.test.txt"
+adultTest = "adult/adult.test1.txt"
 
 myReadFile p f = readFile $ p ++ f
 
@@ -23,20 +23,41 @@ l2t s = (,) (init s) (last s)
 -- test = lines $ myReadFile dataPath adultData 
 buildTree i = do
   inf <- myReadFile dataPath adultData
-  let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
-  let fcs = filter (\x -> (not.null) (snd x) ) cs
-  let all = listStep fcs (-1) "tt" 0  
+  let cs = take i $ getFiltedList inf
+  let all = listStep cs (-1) "tt" 0  
   return all
+
+getFiltedList strInput = filter (\x -> (not.null) (snd x) ) listAll
+  where
+    listAll = map (\x -> l2t (tran2list x) ) (lines strInput)
 
 allTree = buildTree 40
 
-testFlag i = do 
-  inf <- myReadFile dataPath adultData
-  let cs = take i $ map (\x -> l2t (tran2list x) ) (lines inf)
-  let tData = (fst.last) cs
-  myTree <- allTree
-  let tFlag = searchResult myTree (trace ("input list" ++ (show tData))  tData)
-  return $ length tFlag
+testFlag i j = do 
+  inf <- myReadFile dataPath adultTest
+  let cs = take i $ getFiltedList inf
+  let tData = map fst cs
+  let tCheck = map (filter (\x -> x/='.') ) $ map snd cs -- 
+  myTree <- buildTree j
+  let tFlag  = map (\x -> searchResult myTree  x) tData
+  let final = zip tCheck tFlag
+  return final
+
+checkAll i j = do
+  fList <- testFlag i j
+  let rList = map checkI fList
+  let all = length rList
+  let right = length $ filter (\x -> x ) rList
+  return (all,right)  
+
+checkI x
+  |null tFlag = False
+  |hFlag == tData = True
+  |otherwise = False
+  where
+    tData = fst x
+    tFlag = snd x
+    hFlag = head tFlag
 
 test2 i = do
   inf <- myReadFile dataPath adultData
