@@ -31,7 +31,7 @@ getAllGain sList = zipWith (/) gainList  (getSplitInfox pList all)
     all = sum $ map (\x -> length x) $ head pList
     gainList = map (\x -> (sum x)/(toFloat all)) baseGainList 
     baseGainList = map (\x -> map (\y -> propGain y ) x) pList
-    
+
 
 getSplitInfox pList all = map (\x ->sum (getOneSplitInfo  x all )) pList
     
