@@ -5,12 +5,8 @@ module DecisionTree.C4_5
 import Data.Tree
 import Data.List
 import Debug.Trace
+import Util.Util
 
-getDiv::Int->Int->Float
-getDiv p n= (fromInteger px)/(fromInteger nx)
-  where
-    px = toInteger p
-    nx = toInteger n
 
 getEntropy xt = sum $ map (\x -> logTemp x) pList
   where

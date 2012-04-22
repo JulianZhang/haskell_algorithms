@@ -3,13 +3,14 @@ module Bayes.NaiveBayes
 
 import Data.List
 import Debug.Trace
+import Util.Util
 
 getAllProb sList = rpList
   where
     resultList = map snd sList
     rpList = getRP resultList
 
-getRP s = map (\x -> (,,) (fst x) (snd x) all) countList
+getRP s = map (\x -> (,) (fst x) (getDiv (snd x) all)) countList
   where
     all = length s
     sortList = sort s
