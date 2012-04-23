@@ -33,13 +33,6 @@ getSplitInfox pList all = map (\x ->sum (getOneSplitInfo  x all )) pList
     
 getOneSplitInfo vlist all = map (\y -> logTemp (getDiv (length y) all) ) vlist
     
-fstGroup x y= (fst x)==(fst y)
-
-fstSort x y
-  | (fst x) == (fst y) = EQ
-  | (fst x) < (fst y)  = LT
-  | otherwise = GT
-
 propGain sl = ((toFloat.length) sl) * (getEntropy (map (\x -> snd x) sl ))
 
 toFloat x = (fromInteger.toInteger) x :: Float
