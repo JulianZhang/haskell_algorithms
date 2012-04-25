@@ -71,7 +71,7 @@ test2 i = do
   let maxErr = (last cs)  
   return maxErr
 
-testBayes i = do
+testBayes i j = do
   inf <- myReadFile dataPath adultData
   let cs = take i $ getFiltedList inf
   let re = getAllProb cs

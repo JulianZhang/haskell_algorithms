@@ -1,4 +1,5 @@
 module Bayes.NaiveBayes
+ (getAllProb,getTestProb)
   where
 
 import Data.List
@@ -30,4 +31,23 @@ getRP s = map (\x -> (,) (fst x) (getDiv (snd x) all)) countList
     groupList = group sortList
     countList = map (\x -> (,) (head x) (length x) ) groupList
 
+getTestProb builCount testData = maxProb 
+  where
+    all = sum $ map (snd.fst) builCount
+    allProb = map (getFlagProb testData all ) builCount
+    maxProb = fst.head $ sortBy sndSort allProb
+
+getFlagProb td all flagCount = (,) flag  (parProb/flagProb) 
+  where
+    flag = fst.fst flagCount
+    flagCount = (snd.fst) flagCount
+    parLists = snd flagCount
+    parCounts = map (searchParCount td) parLists
+    flagProb = getDiv flagCount all 
+    parProb = sum $ map (\x -> getDiv x flagCount ) parCounts
+
+searchParCount testPar [] = 1
+searchParCount testPar (x:xs)
+  | (fst x) == testPar = ((snd x) +1)
+  | otherwise =  searchParCount testPar xs 
  
