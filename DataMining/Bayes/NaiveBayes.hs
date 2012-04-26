@@ -42,10 +42,11 @@ getFlagProb td all flagCounts = (,) flag  (parProb/flagProb)
     flag = (fst.fst) flagCounts
     flagCount = (snd.fst) flagCounts
     parLists = snd flagCounts
-    parCounts = map (searchParCount td) parLists
+    parCounts = zipWith searchParCount td parLists --- erro here
     flagProb = getDiv flagCount all 
-    parProb = sum $ map (\x -> getDiv x flagCount ) parCounts
+    parProb = product $ map (\x -> getDiv x flagCount ) parCounts
 
+searchParCount::String->[(String,Int)]->Int
 searchParCount testPar [] = 1
 searchParCount testPar (x:xs)
   | (fst x) == testPar = ((snd x) +1)
