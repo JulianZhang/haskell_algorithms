@@ -35,14 +35,15 @@ getTestProb builCount testData = maxProb
   where
     all = sum $ map (snd.fst) builCount
     allProb = map (getFlagProb testData all ) builCount
-    maxProb = fst.head $ sortBy sndSort allProb
+    probList = sortBy sndSort allProb
+    maxProb = fst.last $  probList
 
-getFlagProb td all flagCounts = (,) flag  (parProb/flagProb) 
+getFlagProb td all flagCounts = (,) flag  (parProb*flagProb) 
   where
     flag = (fst.fst) flagCounts
     flagCount = (snd.fst) flagCounts
     parLists = snd flagCounts
-    parCounts = zipWith searchParCount td parLists --- erro here
+    parCounts = zipWith searchParCount td parLists 
     flagProb = getDiv flagCount all 
     parProb = product $ map (\x -> getDiv x flagCount ) parCounts
 
