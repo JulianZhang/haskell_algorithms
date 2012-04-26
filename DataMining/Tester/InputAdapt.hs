@@ -85,7 +85,9 @@ testBayesFlag i j = do
   pcs <- testBayes j
   let tFlag  = map (\x -> getTestProb pcs  x) tData
   let final = zip tCheck tFlag
-  return tData
+  let all = length final
+  let lenTrue = length $ filter (\x -> (fst x)==(snd x)) final
+  return $ (,) lenTrue all
 
 -- tTree::[a]->Tree a
 tTree i
