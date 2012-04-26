@@ -71,11 +71,21 @@ test2 i = do
   let maxErr = (last cs)  
   return maxErr
 
-testBayes i j = do
+testBayes i = do
   inf <- myReadFile dataPath adultData
   let cs = take i $ getFiltedList inf
   let re = getAllProb cs
   return re
+
+testBayesFlag i j = do 
+  inf <- myReadFile dataPath adultTest
+  let cs = take i $ getFiltedList inf
+  let tData = map fst cs
+  let tCheck = map (filter (\x -> x/='.') ) $ map snd cs -- 
+  pcs <- testBayes j
+  let tFlag  = map (\x -> getTestProb pcs  x) tData
+  let final = zip tCheck tFlag
+  return tData
 
 -- tTree::[a]->Tree a
 tTree i
