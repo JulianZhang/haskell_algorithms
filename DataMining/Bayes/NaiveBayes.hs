@@ -35,8 +35,7 @@ getTestProb builCount testData = maxProb
   where
     all = sum $ map (snd.fst) builCount
     allProb = map (getFlagProb testData all ) builCount
-    probList = sortBy sndSort allProb
-    maxProb = fst.last $  probList
+    maxProb = fst $ maximumBy  sndSort  allProb
 
 getFlagProb td all flagCounts = (,) flag  (parProb*flagProb) 
   where
