@@ -23,3 +23,8 @@ getWebItem conn = do quickQuery' conn "select * from new_schema.webitem" []
 addWebItem conn x = do 
     stmt <- prepare conn "INSERT INTO new_schema.webitem (url,path,filename) values(?,?,?)"
     executeMany stmt x
+
+getPages x =do
+      rsp <- Network.HTTP.simpleHTTP (getRequest x)
+              -- fetch document and return it (as a 'String'.)
+      getResponseBody rsp
