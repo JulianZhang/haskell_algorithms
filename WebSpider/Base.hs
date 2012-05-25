@@ -16,17 +16,26 @@ myConn = connectMySQL defaultMySQLConnectInfo {
 addWebItem x = myExe sqlString $ mark2sql x
   where
     sqlString =  "INSERT INTO new_schema.webitem (url,path,filename) values(?,?,?)"
-    --stmt <- prepare myConn "INSERT INTO new_schema.webitem (url,path,filename) values(?,?,?)"         executeMany stmt x
+
+addWebPage x = myExe sqlString $ mark2sql x
+  where
+    sqlString = "INSERT INTO new_schema.webpage (pagename,pagenum ,pageurl,sittag,keyword) values(?,?,?,?,?)"
+
 
 -- myExe sqlStr value= myConn>>=(\y ->prepare y sqlStr)>>= (\y -> executeMany y value) >> myConn >>= commit
+
+setChar conn = do run conn "set names 'utf8'" []
+
 myExe sqlStr value = do
   conn <- myConn
+  setChar conn
   stmt <- prepare conn sqlStr
   executeMany stmt value
   commit conn
 
-addWebPage x = myExe sqlString $ mark2sql x
-  Where
-    sqlString = "INSERT INTO new_schema.webpage (pagename,pagenum ,pageurl,sittag,keyword) values(?,?,?,?,?)"
+
 
 mark2sql x = map (map toSql ) x 
+
+getBytePages x = 
+  (simpleHTTP $  defaultGETRequest_ $ (fromJust . parseURI) x ) >>=getResponseBody::IO B.ByteString
