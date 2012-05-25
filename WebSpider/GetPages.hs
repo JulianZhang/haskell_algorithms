@@ -6,8 +6,6 @@ import Network.HTTP
 import System.IO
 import Data.Maybe
 import Network.URI
--- import RegExDot.RegEx
--- import RegExDot.RegExOpts
 import Text.Regex.PCRE
 import Data.Word
 import Data.ByteString.UTF8 as U
@@ -18,7 +16,6 @@ main = do conn <- connectMySQL defaultMySQLConnectInfo {
                         mysqlUser     = "sqluser",
                         mysqlPassword = "sqluser"
                      }
-
           row1s <- setChar conn 
           let x = [[toSql"123", toSql "sf",toSql "ss"],[toSql"333", toSql "sf",toSql "ss"]]
           y <- getBytePages auri
