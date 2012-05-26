@@ -1,3 +1,7 @@
+module WebSpider.Base
+ (addWebItem,addWebPage,getBytePages)
+  where
+
 import Control.Monad
 import Database.HDBC
 import Database.HDBC.MySQL
@@ -22,7 +26,9 @@ addWebPage x = myExe sqlString $ mark2sql x
     sqlString = "INSERT INTO new_schema.webpage (pagename,pagenum ,pageurl,sittag,keyword) values(?,?,?,?,?)"
 
 
--- myExe sqlStr value= myConn>>=(\y ->prepare y sqlStr)>>= (\y -> executeMany y value) >> myConn >>= commit
+-- myExeM sqlStr value= myConn>>= (\m -> (m >>= preAndExc) >> (m >>= commit))
+--  where
+--    preAndExc m = prepare m sqlStr >>= (\y -> executeMany y value) 
 
 setChar conn = do run conn "set names 'utf8'" []
 
