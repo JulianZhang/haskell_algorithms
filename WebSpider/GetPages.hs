@@ -20,13 +20,49 @@ getPageTitle uri = liftM catchTile $ getBytePages uri
 combinStr::(B.ByteString,String)->[B.ByteString]
 combinStr (tile,uri) = [ tile,(U.fromString ""),(U.fromString uri),(U.fromString ""),(U.fromString "")]
 
+getLastPage x =read ((U.toString.head.last) pl)::Int
+  where
+    pl = x =~ "(?!>)[0-9]+(?=</a>)"::[[B.ByteString]]
 
+getLink x =  (head.head)pl
+  where 
+    pl = x =~ "(?!img src=\")http:[^\r]*jpg(?=\r\")"::[[B.ByteString]]
 
-main = do
+getPath x = pl
+  where
+    pl = x =~".*/(?=[0-9]+\\.jpg)"::B.ByteString
+
+prossPage uri path = do
+  tt <- links
+  mapM (saveLink path) tt
+  where
+    links = liftM2 (genLinks) linkRoot linkCount
+    page =  getBytePages uri
+    linkCount = liftM ((6*).getLastPage) page
+    linkRoot = liftM (U.toString.getPath.getLink) page
+
+saveLink  path link =  linkByte >>= B.writeFile (path++linkStr) >> putStrLn link -- 
+  where
+    linkStr = link =~"(?!/)[^/]+jpg"::String
+    linkByte = getBytePages link
+
+genLinks path 1 = [path ++ "01.jpg"]
+genLinks path linkCount = [path ++ (genNum linkCount)++".jpg"] ++ genLinks path (linkCount-1)
+
+genNum x 
+  | length s ==1 = "0"++s
+  | otherwise = s
+  where
+    s = show x
+
+--main = 11
+
+addPage2db = do
   tiList <- mapM getPageTitle myPageList
   let value = map combinStr $ zip tiList myPageList
   addWebPage value
 
 
+test = liftM (getLink)  $ getBytePages turi  
 
--- test = addWebItem 
+turi = ""  

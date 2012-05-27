@@ -1,5 +1,5 @@
 module WebSpider.Base
- (addWebItem,addWebPage,getBytePages)
+ (addWebItem,addWebPage,getBytePages,getPageByTitle)
   where
 
 import Control.Monad
@@ -24,6 +24,10 @@ addWebItem x = myExe sqlString $ mark2sql x
 addWebPage x = myExe sqlString $ mark2sql x
   where
     sqlString = "INSERT INTO new_schema.webpage (pagename,pagenum ,pageurl,sittag,keyword) values(?,?,?,?,?)"
+
+getPageByTitle til = myConn >>= \x -> quickQuery' x sqlStr [toSql til]
+  where
+    sqlStr =  "select * from new_schema.webpage where pagename like ? "
 
 
 -- myExeM sqlStr value= myConn>>= (\m -> (m >>= preAndExc) >> (m >>= commit))
