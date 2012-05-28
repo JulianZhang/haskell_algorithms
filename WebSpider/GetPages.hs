@@ -6,6 +6,8 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.UTF8 as U
 import WebSpider.Base
 
+import System.Directory
+import System.FilePath.Posix
 
 catchTile x = x =~ "(?=>).*(?=</title)"::B.ByteString
 
@@ -41,7 +43,7 @@ prossPage uri path = do
     linkCount = liftM ((6*).getLastPage) page
     linkRoot = liftM (U.toString.getPath.getLink) page
 
-saveLink  path link =  linkByte >>= B.writeFile (path++linkStr) >> putStrLn link -- 
+saveLink  path link = createDirectoryIfMissing True path >>linkByte >>= B.writeFile (path++linkStr) >> putStrLn link -- 
   where
     linkStr = link =~"(?!/)[^/]+jpg"::String
     linkByte = getBytePages link
