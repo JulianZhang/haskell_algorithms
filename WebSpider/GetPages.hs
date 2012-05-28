@@ -8,6 +8,7 @@ import WebSpider.Base
 
 import System.Directory
 import System.FilePath.Posix
+import Database.HDBC
 
 catchTile x = x =~ "(?=>).*(?=</title)"::B.ByteString
 
@@ -64,7 +65,24 @@ addPage2db = do
   let value = map combinStr $ zip tiList myPageList
   addWebPage value
 
+getPages tl =  do 
+        -- pageList <-  (map getPageByTitle) tl
+        --(map getPageByTitle) tl
+        comList <-  ( zipWith comPage tl) $ (map getPageByTitle) tl
+        --return $ liftM ( zip tl) pageList
+        -- tt <-  comPage  comList
+        return comList
 
-test = liftM (getLink)  $ getBytePages turi  
+-- prossAll path tl = do
+--  map
+--  where
+--    pl = getPages tl
 
-turi = ""  
+comPage::B.ByteString ->IO [[SqlValue]]->IO [(SqlValue,SqlValue,B.ByteString)]
+comPage title dbl = liftM (map  combine) dbl
+  where
+    combine db = ( db!!1, db!!3, title) 
+
+-- test = liftM (getLink)  $ getBytePages   
+
+turi = ["%%"]  
