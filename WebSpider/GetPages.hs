@@ -42,7 +42,8 @@ getPath x = pl
 
 prossPage uri path = do
   tt <- links
-  mapM (\x ->  saveLink path x) tt
+  -- mapM (\x ->  saveLink path x) tt
+  myForkPool (saveLink path) tt 10 
   where
     links = liftM2 (genLinks) linkRoot linkCount
     page =  getBytePages uri
@@ -73,7 +74,7 @@ addPage2db = do
   addWebPage value
 
 
-main =  mapM getPages tur2
+main =  mapM getPages turi
 
 getPages tl = do -- (( zipWith comPage tl) $ (map getPageByTitle) tl)-- >> return ""
         comList <-  getPageByTitle tl
@@ -104,4 +105,4 @@ prePage nameSql urlSql tl  = prossPage url tp
 
 -- test = liftM (getLink)  $ getBytePages   
 
-turi = [(U.fromString "")]  
+turi = [(U.fromString "%%")]  

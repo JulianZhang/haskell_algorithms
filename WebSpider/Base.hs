@@ -1,5 +1,5 @@
 module WebSpider.Base
- (addWebItem,addWebPage,getBytePages,getPageByTitle)
+ (addWebItem,addWebPage,getBytePages,getPageByTitle,myForkPool)
   where
 
 import Control.Monad
@@ -56,8 +56,27 @@ mark2sql x = map (map toSql ) x
 getBytePages x = 
   (simpleHTTP $  defaultGETRequest_ $ (fromJust . parseURI) x ) >>=getResponseBody::IO B.ByteString
 
-myForkPool f count timeout xs=do
-  tm <- newEmptyMVar
+myForkPool f xs count=do
+  m <- newMVar []
+  myFrokMain f xs count m
+
+myFrokMain f [] count  m = do return ""
+
+myFrokMain f xs count  m = do
+  tm <- readMVar m
+  myFrokSub f xs count tm m
+
+myFrokSub f xs count tm m 
+  | length tm > count = do
+    putStrLn $ show tm
+    threadDelay 1000000
+    myFrokMain f xs count m
+  | otherwise = do
+    putStrLn $ show tm
+    forkOS $ poolFork f (head xs) m
+    myFrokMain f (tail xs) count m
+
+    
 
 poolFork f x m = do
   modifyMVar_ m (\y ->liftM (\z -> y ++ [z]) myThreadId)
