@@ -9,8 +9,10 @@ import WebSpider.Base
 import System.Directory
 import System.FilePath.Posix
 import Database.HDBC
+import Control.Parallel
+import Control.Concurrent
 
-catchTile x = x =~ "(?=>).*(?=</title)"::B.ByteString
+catchTile x = x =~ "(?!>).*(?=</title)"::B.ByteString
 
 genPageList::String->String->Int->[String]
 genPageList baseUri endUri 1 = [baseUri++(show 1)++endUri] 
@@ -23,9 +25,11 @@ getPageTitle uri = liftM catchTile $ getBytePages uri
 combinStr::(B.ByteString,String)->[B.ByteString]
 combinStr (tile,uri) = [ tile,(U.fromString ""),(U.fromString uri),(U.fromString ""),(U.fromString "")]
 
-getLastPage x =read ((U.toString.head.last) pl)::Int
+getLastPage x = getLast pl
   where
     pl = x =~ "(?!>)[0-9]+(?=</a>)"::[[B.ByteString]]
+    getLast [] = 1
+    getLast xs = read ((U.toString.head.last) xs)::Int
 
 getLink x =  (head.head)pl
   where 
@@ -35,14 +39,17 @@ getPath x = pl
   where
     pl = x =~".*/(?=[0-9]+\\.jpg)"::B.ByteString
 
+
 prossPage uri path = do
   tt <- links
-  mapM (saveLink path) tt
+  mapM (\x ->  saveLink path x) tt
   where
     links = liftM2 (genLinks) linkRoot linkCount
     page =  getBytePages uri
     linkCount = liftM ((6*).getLastPage) page
     linkRoot = liftM (U.toString.getPath.getLink) page
+
+parSaveLink path (x:xs) = liftM (saveLink path) 
 
 saveLink  path link = createDirectoryIfMissing True path >>linkByte >>= B.writeFile (path++linkStr) >> putStrLn link -- 
   where
@@ -65,24 +72,36 @@ addPage2db = do
   let value = map combinStr $ zip tiList myPageList
   addWebPage value
 
-getPages tl =  do 
-        -- pageList <-  (map getPageByTitle) tl
-        --(map getPageByTitle) tl
-        comList <-  ( zipWith comPage tl) $ (map getPageByTitle) tl
-        --return $ liftM ( zip tl) pageList
-        -- tt <-  comPage  comList
-        return comList
+
+main =  mapM getPages tur2
+
+getPages tl = do -- (( zipWith comPage tl) $ (map getPageByTitle) tl)-- >> return ""
+        comList <-  getPageByTitle tl
+        forM_  comList $ \row -> prePage (row!!1) (row!!3) tl  -- $ show row -- ( zipWith comPage tl)
+        -- forM_ rows $ \row -> putStrLn $ show row
+
+
+
+
+ttt  x = 11
+
+prePage nameSql urlSql tl  = prossPage url tp        
+  where
+     path = "/Users/zhangjun/Desktop/code/"
+     name = fromSql nameSql
+     url = fromSql urlSql
+     tp = path ++ "/" ++  U.toString tl ++ "/" ++ name++"/"
 
 -- prossAll path tl = do
 --  map
 --  where
 --    pl = getPages tl
 
-comPage::B.ByteString ->IO [[SqlValue]]->IO [(SqlValue,SqlValue,B.ByteString)]
-comPage title dbl = liftM (map  combine) dbl
-  where
-    combine db = ( db!!1, db!!3, title) 
+--comPage::B.ByteString ->IO [[SqlValue]]->IO [(SqlValue,SqlValue,B.ByteString)]
+--comPage  dbl = liftM ( combine) dbl
+--  where
+--    combine db =  prePage ( db!!1, db!!3) 
 
 -- test = liftM (getLink)  $ getBytePages   
 
-turi = ["%%"]  
+turi = [(U.fromString "")]  
