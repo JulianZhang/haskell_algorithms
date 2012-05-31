@@ -79,6 +79,6 @@ myFrokSub f xs count tm m
     
 
 poolFork f x m = do
-  modifyMVar_ m (\y ->liftM (\z -> y ++ [z]) myThreadId)
+  modifyMVar_ m (\y -> liftM (\z -> y ++ [z]) myThreadId )
   f x
-  modifyMVar_ m (\y ->liftM (\z ->dropWhile (==z) y ) myThreadId)
+  modifyMVar_ m (\y -> liftM (\z ->filter (/=z) y ) myThreadId)
