@@ -12,6 +12,8 @@ import Database.HDBC
 import Control.Parallel
 import Control.Concurrent
 
+fileType =""
+
 catchTile x = x =~ "(?!>).*(?=</title)"::B.ByteString
 
 genPageList::String->String->Int->[String]
@@ -33,16 +35,16 @@ getLastPage x = getLast pl
 
 getLink x =  (head.head)pl
   where 
-    pl = x =~ "(?!img src=\")http:[^\r]*jpg(?=\r\")"::[[B.ByteString]]
+    pl = x =~ "(?!img src=\")http:[^\r]*" ++ fileType ++"(?=\r\")"::[[B.ByteString]]
 
 getPath x = pl
   where
-    pl = x =~".*/(?=[0-9]+\\.jpg)"::B.ByteString
+    pl = x =~".*/(?=[0-9]+\\." ++ fileType ++")"::B.ByteString
 
 
 prossPage uri path = do
   tt <- links
-  -- mapM (\x ->  saveLink path x) tt
+  --mapM (\x ->  saveLink path x) tt
   myForkPool (saveLink path) tt 10 
   where
     links = liftM2 (genLinks) linkRoot linkCount
@@ -54,11 +56,11 @@ parSaveLink path (x:xs) = liftM (saveLink path)
 
 saveLink  path link = createDirectoryIfMissing True path >>linkByte >>= B.writeFile (path++linkStr) >> putStrLn link -- 
   where
-    linkStr = link =~"(?!/)[^/]+jpg"::String
+    linkStr = link =~"(?!/)[^/]+" ++ fileType ::String
     linkByte = getBytePages link
 
-genLinks path 1 = [path ++ "01.jpg"]
-genLinks path linkCount = [path ++ (genNum linkCount)++".jpg"] ++ genLinks path (linkCount-1)
+genLinks path 1 = [path ++ "01." ++ fileType]
+genLinks path linkCount = [path ++ (genNum linkCount)++"."  ++ fileType ] ++ genLinks path (linkCount-1)
 
 genNum x 
   | length s ==1 = "0"++s
@@ -76,15 +78,10 @@ addPage2db = do
 
 main =  mapM getPages turi
 
-getPages tl = do -- (( zipWith comPage tl) $ (map getPageByTitle) tl)-- >> return ""
+getPages tl = do 
         comList <-  getPageByTitle tl
-        forM_  comList $ \row -> prePage (row!!1) (row!!3) tl  -- $ show row -- ( zipWith comPage tl)
-        -- forM_ rows $ \row -> putStrLn $ show row
+        forM_  comList $ \row -> prePage (row!!1) (row!!3) tl  
 
-
-
-
-ttt  x = 11
 
 prePage nameSql urlSql tl  = prossPage url tp        
   where
@@ -92,17 +89,5 @@ prePage nameSql urlSql tl  = prossPage url tp
      name = fromSql nameSql
      url = fromSql urlSql
      tp = path ++ "/" ++  U.toString tl ++ "/" ++ name++"/"
-
--- prossAll path tl = do
---  map
---  where
---    pl = getPages tl
-
---comPage::B.ByteString ->IO [[SqlValue]]->IO [(SqlValue,SqlValue,B.ByteString)]
---comPage  dbl = liftM ( combine) dbl
---  where
---    combine db =  prePage ( db!!1, db!!3) 
-
--- test = liftM (getLink)  $ getBytePages   
 
 turi = [(U.fromString "%%")]  
