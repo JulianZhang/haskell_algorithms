@@ -35,11 +35,11 @@ getLastPage x = getLast pl
 
 getLink x =  (head.head)pl
   where 
-    pl = x =~ "(?!img src=\")http:[^\r]*" ++ fileType ++"(?=\r\")"::[[B.ByteString]]
+    pl = x =~ ("(?!img src=\")http:[^\r]*" ++ fileType ++"(?=\r\")")::[[B.ByteString]]
 
 getPath x = pl
   where
-    pl = x =~".*/(?=[0-9]+\\." ++ fileType ++")"::B.ByteString
+    pl = x =~(".*/(?=[0-9]+\\." ++ fileType ++")")::B.ByteString
 
 
 prossPage uri path = do
@@ -56,7 +56,7 @@ parSaveLink path (x:xs) = liftM (saveLink path)
 
 saveLink  path link = createDirectoryIfMissing True path >>linkByte >>= B.writeFile (path++linkStr) >> putStrLn link -- 
   where
-    linkStr = link =~"(?!/)[^/]+" ++ fileType ::String
+    linkStr = link =~("(?!/)[^/]+" ++ fileType) ::String
     linkByte = getBytePages link
 
 genLinks path 1 = [path ++ "01." ++ fileType]
@@ -85,9 +85,11 @@ getPages tl = do
 
 prePage nameSql urlSql tl  = prossPage url tp        
   where
-     path = "/Users/zhangjun/Desktop/code/"
+     path = "/Users/zhangjun/Desktop/code/pic/"
      name = fromSql nameSql
      url = fromSql urlSql
      tp = path ++ "/" ++  U.toString tl ++ "/" ++ name++"/"
 
-turi = [(U.fromString "%%")]  
+turi = [(U.fromString "%%")]
+
+--[]  
