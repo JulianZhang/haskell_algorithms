@@ -29,3 +29,18 @@ apriAll llc min allStep curStep
     jointemp step =  aprjoin step step
     filterNew step = filter (not.null)  $ foldl union [] (jointemp step)
 
+-- fptree entry
+-- fpTree llc min = 
+
+getItemLists llc = foldr getItemList []  llc
+
+getItemList inList itemList = foldr addList itemList inList
+
+addList  item itemList 
+  | [] == itemIndexs = itemList ++ [(item,1)]
+  | otherwise = newList
+  where 
+    itemIndexs = findIndices  (\x -> item == fst x) itemList
+    itemIndex = head itemIndexs
+    itemPar = itemList!!itemIndex
+    newList = (take (itemIndex ) itemList) ++ (drop (itemIndex + 1) itemList ) ++ [(fst itemPar,(snd itemPar)+1)]
