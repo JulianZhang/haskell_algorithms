@@ -83,11 +83,10 @@ listTreeNode trace myTree  = nextLevel ++ [newTrace]
   where
     rootValue = (fst.rootLabel) myTree
     nextLevel = concat $ map (listTreeNode newTrace) (subForest myTree)
-    newTrace = filter (\x ->True) $ trace ++[rootValue]
+    newTrace = trace ++[rootValue]
 
 findPosition::Eq a =>a->[[a]]->[[a]]->[([a],(a,Int))]
 findPosition _ [] _ = []
-findPosition _ _ [] = []
 findPosition node llc treeList
  |null (fst filterLLC) = nextCall
  |otherwise =nextCall ++ [(needFind,(node,length (fst filterLLC)))]
