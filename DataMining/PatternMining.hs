@@ -45,11 +45,13 @@ mainFPTree llc = foldl (searchAndAdd llc) treeRoot sList
   where
     sList = map fst $ getSortList llc
 
-searchAndAdd::Eq a =>[[a]]->Tree (a,Int)->a->Tree (a,Int)
-searchAndAdd llc treeIn item = addTreeNode [] myAddNodeList treeIn
+--searchAndAdd::Eq a =>[[a]]->Tree (a,Int)->a->Tree (a,Int)
+searchAndAdd llc treeIn item =  addTreeNode [] treeListWithRoot treeIn
       where
-        myTreeList = listTreeNode [] treeIn
+        myTreeList =  concat $ map (listTreeNode []) (subForest treeIn) --skip the treenode listTreeNode [] treeIn 
         myAddNodeList = findPosition item llc myTreeList
+        rootNode = (fst.rootLabel) treeIn
+        treeListWithRoot = map (\x ->( [rootNode]++(fst x),  (snd x)) ) myAddNodeList
         
 
 sndSort x y
@@ -83,21 +85,21 @@ listTreeNode trace myTree  = nextLevel ++ [newTrace]
   where
     rootValue = (fst.rootLabel) myTree
     nextLevel = concat $ map (listTreeNode newTrace) (subForest myTree)
-    newTrace = filter (\x ->True) $ trace ++[rootValue]
+    newTrace =  trace ++[rootValue]
 
 findPosition::Eq a =>a->[[a]]->[[a]]->[([a],(a,Int))]
 findPosition _ [] _ = []
-findPosition _ _ [] = []
 findPosition node llc treeList
+ |null treeList = [([],(node, filterInEmptyCase ))]
  |null (fst filterLLC) = nextCall
- |otherwise =nextCall ++ [(needFind,(node,length (fst filterLLC)))]
+ |otherwise =nextCall ++ [(curTl,(node,length (fst filterLLC)))]
   where
     curTl = head treeList
     nextTl = tail treeList
     needFind = curTl ++ [node]
     filterLLC = partition (\x -> and (map (\y-> elem y x) needFind) ) llc
     nextCall = findPosition node (snd filterLLC) nextTl
-    
+    filterInEmptyCase = length $ filter (\x-> elem node x) llc
     
 -- myFilter  y =  
 
