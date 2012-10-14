@@ -41,9 +41,16 @@ buildFPTree llc tree [] = tree
 
 -- buildFPTree llc tree itemLists = 
 
-mainFPTree llc = map (\x -> ) sList
+mainFPTree llc = foldl (searchAndAdd llc) treeRoot sList
   where
-    sList = getSortList llc
+    sList = map fst $ getSortList llc
+
+searchAndAdd::Eq a =>[[a]]->Tree (a,Int)->a->Tree (a,Int)
+searchAndAdd llc treeIn item = addTreeNode [] myAddNodeList treeIn
+      where
+        myTreeList = listTreeNode [] treeIn
+        myAddNodeList = findPosition item llc myTreeList
+        
 
 sndSort x y
   | (snd x) == (snd y) = EQ
@@ -55,15 +62,15 @@ getSortList llc = sortBy sndSort countList
     allList = group $  sort $ concat llc
     countList =  map (\x -> (head x,length x)) allList
     
-
+addTreeNode::Eq a =>[a]->[([a],(a,Int))]->Tree (a,Int)->Tree (a,Int)
 addTreeNode trace addNodeList myTree
   | null traceItem = Node rootValue (nextLevel)
   | otherwise = Node rootValue (nextLevel ++ [Node traceNode []])
   where
     nextLevel = map addNewTreeNode (subForest myTree)
     addNewTreeNode = addTreeNode newTrace addNodeList
-    newTrace = trace ++ [rootValue]
-    rootValue = (fst.rootLabel) myTree
+    newTrace = trace ++ [fst rootValue]
+    rootValue = (rootLabel) myTree
     traceItem = filter (\x -> listEq newTrace (fst x)) addNodeList
     traceNode = (snd.head) traceItem
 
@@ -78,13 +85,15 @@ listTreeNode trace myTree  = nextLevel ++ [newTrace]
     nextLevel = concat $ map (listTreeNode newTrace) (subForest myTree)
     newTrace = trace ++[rootValue]
 
+findPosition::Eq a =>a->[[a]]->[[a]]->[([a],(a,Int))]
+findPosition _ [] _ = []
 findPosition node llc treeList
  |null (fst filterLLC) = nextCall
- |otherwise = [(needFind,length (fst filterLLC))]
+ |otherwise =nextCall ++ [(needFind,(node,length (fst filterLLC)))]
   where
     curTl = head treeList
     nextTl = tail treeList
-    needFind = curTl ++ node
+    needFind = curTl ++ [node]
     filterLLC = partition (\x -> and (map (\y-> elem y x) needFind) ) llc
     nextCall = findPosition node (snd filterLLC) nextTl
     
